@@ -1,7 +1,12 @@
-d3.csv("data/champions.csv", function(data) {
-    printDividendInfo(data);
+d3.csv("data/allCCC.csv", function(data) {
+    printTickers(data);
+    printEPS(data);
 });
 
-function printDividendInfo(data) {
-    console.log(data["U.S. Dividend Champions"] + " - " + data["Dividend Information"]);
+function printTickers(data) {
+    console.log(data["Name"] + " - " + data["Symbol"]);
+}
+
+function printEPS(data) {
+    console.log("Earnings per share: " + data["EPS"]);
 }
