@@ -134,4 +134,4 @@ function renderTreeMap(dataSet, metric) {
     });
 }
 
-renderTreeMap("/data/champions.csv", "5-yr")
+renderTreeMap("/data/contenders.csv", "Price")
