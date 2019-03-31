@@ -12,6 +12,7 @@ function init() {
   let valueSelect = body
     .insert("div")
     .insert("select")
+    .attr("id", "valueSelect")
     .style("margin-left", "5vh")
     .style("font-family", "Courier New, Courier, monospace")
     .style("background-color", "white")
@@ -24,14 +25,14 @@ function init() {
     .data(valueOptions)
     .enter()
     .append("option")
-    .attr("value", function(d) {
+    .attr("value", function (d) {
       return d;
     })
-    .text(function(d) {
+    .text(function (d) {
       return d;
     });
 
-  valueSelect.on("change", function(d) {
+  valueSelect.on("change", function (d) {
     //console.log(d3.select(this).property("value"));
     renderTreeMap("/data/contenders.csv", d3.select(this).property("value"));
   });
@@ -45,25 +46,25 @@ function renderTreeMap(dataSet, metric) {
     .append("div")
     .attr("id", "treemap");
 
-  d3.csv(dataSet, function(data) {
+  d3.csv(dataSet, function (data) {
     let nest = d3
       .nest()
-      .key(function(d) {
+      .key(function (d) {
         return d.Sector;
       })
-      .key(function(d) {
+      .key(function (d) {
         return d.Symbol;
       })
-      .rollup(function(d) {
-        return d3.sum(d, function(d) {
+      .rollup(function (d) {
+        return d3.sum(d, function (d) {
           return d[metric];
         });
       });
 
-    let infoNest = d3.nest().key(function(d) {
+    let infoNest = d3.nest().key(function (d) {
       return d.Symbol;
     })
-    .map(data);
+      .map(data);
 
     let averageMap = new Map();
 
@@ -100,13 +101,13 @@ function renderTreeMap(dataSet, metric) {
       .range(["#644553", "#8B444E", "#414554", "#347D4E", "#38694F"]);
 
     let root = d3
-      .hierarchy({ values: nest.entries(data).slice(0, -1) }, function(d) {
+      .hierarchy({ values: nest.entries(data).slice(0, -1) }, function (d) {
         return d.values;
       })
-      .sum(function(d) {
+      .sum(function (d) {
         return d.value;
       })
-      .sort(function(a, b) {
+      .sort(function (a, b) {
         return b.value - a.value;
       });
 
@@ -124,6 +125,7 @@ function renderTreeMap(dataSet, metric) {
     let tooltip = d3
       .select("body")
       .append("div")
+      .attr("id", "toolTip")
       .attr("class", "toolTip");
 
     let node = d3
@@ -132,11 +134,12 @@ function renderTreeMap(dataSet, metric) {
       .data(root.leaves())
       .enter()
       .insert("div")
-      .on("click", function(d) {
+      .on("click", function (d) {
         console.log(d.parent.data.key);
-        console.log(d.parent);
+        //console.log(d.parent);
+        runZoomIn(d.parent.data.key);
       })
-      .on("mousemove", function(d) {
+      .on("mousemove", function (d) {
         // http://bl.ocks.org/ndobie/90ae9f1a5c7f88ad4929
 
         tooltip.style("left", d3.event.pageX + 10 + "px");
@@ -147,36 +150,36 @@ function renderTreeMap(dataSet, metric) {
         tooltip.style("display", "inline-block");
         tooltip.style("background", "white");
         tooltip.style("border", "solid");
-        tooltip.html(function() {
-            let stock = infoNest["$" + d.data.key][0];
+        tooltip.html(function () {
+          let stock = infoNest["$" + d.data.key][0];
 
-            let ticker = '<strong>' + stock["Symbol"] + '</strong> <br/><br/>';
+          let ticker = '<strong>' + stock["Symbol"] + '</strong> <br/><br/>';
 
-            let industry = 'Industry: ' + stock["Industry"] + '<br/>';
-            let price = 'Price: $' + stock["Price"] + '<br/>';
-            let eps = 'Earnings Per Share: ' + stock["EPS"] + '<br/>';
-            let peg = 'PEG Ratio: ' + stock["PEG"] + '<br/>';
+          let industry = 'Industry: ' + stock["Industry"] + '<br/>';
+          let price = 'Price: $' + stock["Price"] + '<br/>';
+          let eps = 'Earnings Per Share: ' + stock["EPS"] + '<br/>';
+          let peg = 'PEG Ratio: ' + stock["PEG"] + '<br/>';
 
-            return ticker + industry + price + eps + peg;
+          return ticker + industry + price + eps + peg;
         });
       })
-      .on("mouseout", function(d) {
+      .on("mouseout", function (d) {
         tooltip.style("display", "none");
       })
       .attr("class", "node")
-      .style("left", function(d) {
+      .style("left", function (d) {
         return d.x0 + "px";
       })
-      .style("top", function(d) {
+      .style("top", function (d) {
         return d.y0 + "px";
       })
-      .style("width", function(d) {
+      .style("width", function (d) {
         return d.x1 - d.x0 + "px";
       })
-      .style("height", function(d) {
+      .style("height", function (d) {
         return d.y1 - d.y0 + "px";
       })
-      .style("background", function(d) {
+      .style("background", function (d) {
         let sector = d.parent.data.key;
         let average = averageMap.get(sector);
         let diff = (d.value - average).toFixed();
@@ -184,23 +187,23 @@ function renderTreeMap(dataSet, metric) {
       })
       .insert("div")
       .attr("class", "header")
-      .style("left", function(d) {
+      .style("left", function (d) {
         return d.x0 + "px";
       })
-      .style("top", function(d) {
+      .style("top", function (d) {
         return d.y0 + "px";
       })
-      .style("width", function(d) {
+      .style("width", function (d) {
         return d.x1 - d.x0 + "px";
       })
-      .style("height", function(d) {
+      .style("height", function (d) {
         return d.y1 - d.y0 + "px";
       });
 
     node
       .append("div")
       .attr("class", "node-value")
-      .text(function(d) {
+      .text(function (d) {
         let sector = d.parent.data.key;
         let average = averageMap.get(sector);
         let diff = (d.value - average).toFixed();
@@ -213,7 +216,7 @@ function renderTreeMap(dataSet, metric) {
         return diff;
       })
       .style("color", "white")
-      .style("opacity", function(d) {
+      .style("opacity", function (d) {
         let width = d.x1 - d.x0;
         let height = d.y1 - d.y0;
 
@@ -227,11 +230,11 @@ function renderTreeMap(dataSet, metric) {
     node
       .append("div")
       .attr("class", "node-label")
-      .text(function(d) {
+      .text(function (d) {
         return d.data.key;
       })
       .style("color", "white")
-      .style("opacity", function(d) {
+      .style("opacity", function (d) {
         let width = d.x1 - d.x0;
         let height = d.y1 - d.y0;
 
