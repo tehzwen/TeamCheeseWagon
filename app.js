@@ -66,7 +66,6 @@ function renderTreeMap(dataSet, metric) {
     .map(data);
 
     let averageMap = new Map();
-    let maxMap = new Map();
 
     let entries = nest.entries(data).slice(0, -1);
 
@@ -81,15 +80,9 @@ function renderTreeMap(dataSet, metric) {
         let stock = sector.values[index];
         total += stock.value;
         stockCount++;
-
-        if (stock.value > max) {
-          max = stock.value;
-        }
       }
 
       let average = (total / stockCount).toFixed(2);
-
-      maxMap.set(sectorName, max);
       averageMap.set(sectorName, average);
     }
 
@@ -144,21 +137,27 @@ function renderTreeMap(dataSet, metric) {
         console.log(d.parent);
       })
       .on("mousemove", function(d) {
+        // http://bl.ocks.org/ndobie/90ae9f1a5c7f88ad4929
+
         tooltip.style("left", d3.event.pageX + 10 + "px");
         tooltip.style("top", d3.event.pageY - 20 + "px");
-        tooltip.style("width", "200px");
+        tooltip.style("width", "325px");
         tooltip.style("height", "250px");
         tooltip.style("position", "absolute");
         tooltip.style("display", "inline-block");
         tooltip.style("background", "white");
+        tooltip.style("border", "solid");
         tooltip.html(function() {
             let stock = infoNest["$" + d.data.key][0];
 
-            let industry = 'Industry: ' + stock["Industry"] + '<br/>'
-            let price = 'Price: ' + stock["Price"] + '<br/>'
-            let eps = 'Earnings Per Share: ' + stock["EPS"] + '<br/>'
+            let ticker = '<strong>' + stock["Symbol"] + '</strong> <br/><br/>';
 
-            return industry + price + eps;
+            let industry = 'Industry: ' + stock["Industry"] + '<br/>';
+            let price = 'Price: $' + stock["Price"] + '<br/>';
+            let eps = 'Earnings Per Share: ' + stock["EPS"] + '<br/>';
+            let peg = 'PEG Ratio: ' + stock["PEG"] + '<br/>';
+
+            return ticker + industry + price + eps + peg;
         });
       })
       .on("mouseout", function(d) {
