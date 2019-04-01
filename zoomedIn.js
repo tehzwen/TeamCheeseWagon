@@ -1,39 +1,22 @@
-
-
 var valueName = "Growth"
-
-var overAllHeight = 1200;
-var overAllWidth = 1800;
-
+var overAllHeight = 1000;
+var overAllWidth = 1200;
 var textColor = 'black';
 var themeColor = '#68edbc';
 var boxFontSize = 0;
 
-function runZoomIn(sectorName) {
-
+function runZoomIn(sectorName, valueName) {
+    d3.select('#toolTip').remove();
     var sectorName = sectorName;
 
-    var myDiv = d3.select('#mydiv')
-    myDiv.insert('h1')
-        .style('text-align', 'center')
-        .style('color', 'white')
-        .style('font-family', 'Courier New, Courier, monospace')
-        .text("Growth Rate by Sector")
+    d3.select('div')
+        .insert('div')
+        .attr('id', 'mydiv')
 
-    var sectorOptions = [
-        "Energy",
-        "Utilities",
-        "Consumer Discretionary",
-        "Industrials",
-        "Health Care",
-        "Information Technology",
-        "Real Estate",
-        "Financials",
-        "Consumer Staples",
-        "Utilities",
-        "Materials",
-        "Communication Services"
-    ];
+    var myDiv = d3.select('#mydiv')
+
+    myDiv.insert('h1')
+        .text(sectorName)
 
     var valueOptions = [
         "Growth",
@@ -43,39 +26,35 @@ function runZoomIn(sectorName) {
         "Dividend"
     ]
 
+    //set first item to the value that was passed from overview
+    for (let i = 0; i < valueOptions.length; i++) {
+        if (valueOptions[i] === valueName) {
+            let temp = valueOptions[0];
+            valueOptions[0] = valueName;
+            valueOptions[i] = temp;
+        }
+    }
 
-    sectorSelect = myDiv
+    myDiv
         .insert("div")
+        .attr('id', 'innerButtonDiv')
         .style('margin-left', '5vh')
+        .style('display', 'flex')
+
+    var backButton = d3.select("#innerButtonDiv")
+        .insert('button')
+        .text('Back')
+
+    backButton.on("click", function (d) {
+        runOverview();
+    });
+
+    var valueSelect = d3.select("#innerButtonDiv")
         .insert("select")
-        .attr('class', 'category-thing')
         .style('font-family', 'Courier New, Courier, monospace')
-        .style('margin-right', '5vh')
-        .style('background-color', themeColor)
         .style('color', textColor)
         .style('width', '10vw')
         .style('height', '1.5vw')
-
-    sectorSelect.selectAll("option")
-        .data(sectorOptions)
-        .enter()
-        .append("option")
-        .attr("value", function (d) {
-            return d;
-        })
-        .text(function (d) {
-            return d;
-        });
-
-    valueSelect = myDiv
-        .select("div")
-        .insert("select")
-        .style('font-family', 'Courier New, Courier, monospace')
-        .style('background-color', themeColor)
-        .style('color', textColor)
-        .style('width', '10vw')
-        .style('height', '1.5vw')
-
 
     valueSelect.selectAll("option")
         .data(valueOptions)
@@ -88,7 +67,6 @@ function runZoomIn(sectorName) {
             return d;
         });
 
-
     getData(sectorName, valueName);
 
     valueSelect.on("change", function (d) {
@@ -96,12 +74,7 @@ function runZoomIn(sectorName) {
         getData(sectorName, valueName);
     });
 
-    sectorSelect.on("change", function (d) {
-        sectorName = d3.select(this).property("value");
-        getData(sectorName, valueName);
-    });
 }
-
 
 function getData(sector, value) {
 
@@ -110,7 +83,6 @@ function getData(sector, value) {
         .append("svg")
         .style("width", overAllWidth)
         .style("height", overAllHeight)
-        .style('margin-left', '5vh')
         .append("g");
 
     d3.csv("/data/allCCC.csv", function (data) {
@@ -126,15 +98,14 @@ function getData(sector, value) {
         for (let i = 0; i < filteredArray.length; i++) {
 
             if (filteredArray[i][value] > 0 && filteredArray[i][value] !== "n/a") {
-                console.log(filteredArray[i][value]);
+                //console.log(filteredArray[i][value]);
                 actualData.children.push({
-                    "name": filteredArray[i]["Name"],
+                    "name": filteredArray[i]["Symbol"],
                     "value": filteredArray[i][value]
                 });
             }
         }
 
-        console.log(actualData);
         d3.select("#treemap").remove();
         d3.select("#valueSelect").remove();
         d3.select("#toolTip").remove();
@@ -154,12 +125,15 @@ function getAverage(actualData) {
     }
 
     var avg = total / actualData.children.length;
-    console.log(avg);
     return avg;
 }
 
 function displayTreeMap(actualData) {
-    //console.log(actualData);
+    let color = d3
+        .scaleThreshold()
+        .domain([-10, -1, 1, 10])
+        .range(["#644553", "#8B444E", "#414554", "#347D4E", "#38694F"]);
+
     var avg = getAverage(actualData);
 
     var treemapLayout = d3.treemap()
@@ -181,8 +155,8 @@ function displayTreeMap(actualData) {
         .append('rect')
         .attr('x', function (d) { return d.x0; })
         .attr('y', function (d) { return d.y0; })
-        .attr('width', function (d) { return d.x1 - d.x0; })
-        .attr('height', function (d) { return d.y1 - d.y0; })
+        .attr('width', function (d) { return d.x1 - d.x0 + "px"; })
+        .attr('height', function (d) { return d.y1 - d.y0 + "px"; })
 
 
     blocks.enter()
@@ -201,15 +175,19 @@ function displayTreeMap(actualData) {
 
     nodes
         .append('rect')
-
         .attr('width', function (d) { return d.x1 - d.x0; })
         .attr('height', function (d) { return d.y1 - d.y0; })
 
     nodes
         .append('text')
         .style('font-family', 'Courier New, Courier, monospace')
-        .style('color', textColor)
+        .style('fill', 'white')
         .text(function (d) {
+
+            if (d.value < (avg - d.value)) {
+                return "";
+            }
+
             return d.data.name;
         })
         .attr('dx', 4)
@@ -220,8 +198,12 @@ function displayTreeMap(actualData) {
         .append('text')
         .style('font-weight', 'bold')
         .style('font-family', 'Courier New, Courier, monospace')
-        .style('font-color', textColor)
+        .style('fill', 'white')
         .text(function (d) {
+            if (d.value < (avg - d.value)) {
+                return "";
+            }
+
             return d.data.value;
         })
 
@@ -231,24 +213,11 @@ function displayTreeMap(actualData) {
 
     d3.selectAll('rect')
         .attr("id", "data-square")
-        .attr('fill', themeColor)
-        .attr('stroke', 'white')
-        .attr('fill-opacity', function (d) {
-
-            let opacityVal;
-
-            opacityVal = d.data.value / (avg * 2);
-
-            if (opacityVal) {
-                return opacityVal;
-            }
-            else {
-                return 0.01;
-            }
+        .attr('fill', function (d) {
+            let diff = (d.value - avg).toFixed();
+            return color(diff);
         })
-
-
-
+        .attr('stroke', 'white')
 }
 
 

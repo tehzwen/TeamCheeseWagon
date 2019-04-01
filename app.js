@@ -3,8 +3,10 @@ var margin = { top: 20, right: 20, bottom: 30, left: 50 };
   (height = 900 - margin.top - margin.bottom);
 
 var sectorTextObjects = [];
+var valueSelected;
 
 function init() {
+  valueSelected = "Growth";
   let body = d3.select("#body");
 
   var valueOptions = ["Growth", "PEG", "P/E", "Price", "Dividend"];
@@ -13,7 +15,6 @@ function init() {
     .insert("div")
     .insert("select")
     .attr("id", "valueSelect")
-    .style("margin-left", "5vh")
     .style("font-family", "Courier New, Courier, monospace")
     .style("background-color", "white")
     .style("color", "black")
@@ -33,7 +34,7 @@ function init() {
     });
 
   valueSelect.on("change", function (d) {
-    //console.log(d3.select(this).property("value"));
+    valueSelected = d3.select(this).property("value");
     renderTreeMap("/data/contenders.csv", d3.select(this).property("value"));
   });
 }
@@ -135,9 +136,7 @@ function renderTreeMap(dataSet, metric) {
       .enter()
       .insert("div")
       .on("click", function (d) {
-        console.log(d.parent.data.key);
-        //console.log(d.parent);
-        runZoomIn(d.parent.data.key);
+        runZoomIn(d.parent.data.key, valueSelected);
       })
       .on("mousemove", function (d) {
         // http://bl.ocks.org/ndobie/90ae9f1a5c7f88ad4929
@@ -247,5 +246,14 @@ function renderTreeMap(dataSet, metric) {
   });
 }
 
-init();
-renderTreeMap("/data/contenders.csv", "Price");
+function runOverview() {
+  d3.select("h1").remove();
+  d3.select("svg").remove();
+  d3.select("#innerButtonDiv").remove();
+
+  init();
+  renderTreeMap("/data/contenders.csv", "Price");
+}
+
+runOverview();
+
