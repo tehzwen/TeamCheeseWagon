@@ -24,7 +24,7 @@ class Storage {
     this.storage = data;
   }
 
-  getStorage(){
+  getStorage() {
     return this.storage;
   }
 }
@@ -38,7 +38,7 @@ var store = new Storage();
 /*------------------------------------------------------------------------*/
 /*------------------------------------------------------------------------*/
 var valueName = "Growth"
-var overAllHeight = 1000;
+var overAllHeight = 900;
 var overAllWidth = 1200;
 var textColor = 'black';
 var themeColor = '#68edbc';

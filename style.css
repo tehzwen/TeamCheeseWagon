@@ -6,7 +6,13 @@ body {
     align-content: center;
 }
 
-.content {
+.content-top {
+    max-width: 1220px;
+    margin: auto;
+    min-height: 900px;
+}
+
+.compare-content {
     max-width: 1220px;
     margin: auto;
 }
