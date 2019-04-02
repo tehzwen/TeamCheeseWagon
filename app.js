@@ -1,6 +1,78 @@
+import compare from './compare.js';
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+/*---------------------------- COMPARISION  ---------------------------*/
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+class Storage {
+  constructor() {
+    this.storage = [];
+  }
+
+  setStorage(data) {
+    this.storage = data;
+  }
+
+  getStorage(){
+    return this.storage;
+  }
+}
+var store = new Storage();
+
+function cleanUp() {
+	d3.select("#t1-2").selectAll("*").remove();
+	d3.select("#t1-3").selectAll("*").remove();
+
+	d3.select("#n1-2").selectAll("*").remove();
+	d3.select("#n1-3").selectAll("*").remove();
+
+	d3.select('#card1').selectAll("*").filter((d, i) => i > 10).remove();
+
+	d3.select('#card2').selectAll("*").remove();
+	const card2 = d3.select('#card2');
+	
+	const content = card2.append("div").attr('class', 'content');
+	content.append("div")
+		.attr("class", "center aligned middle aligned column")
+		.text("Dividend Information");
+	card2.append("div").attr('class', 'row extra content');
+}
+
+function compareListener() {
+	let selectedArr = [];
+
+	let sel1 = document.getElementById('a1-2');
+	let sel2 = document.getElementById('a1-3');
+
+	const tickerOne = sel1.options[sel1.selectedIndex].value;
+	const tickerTwo = sel2.options[sel2.selectedIndex].value;
+
+  // const csvArray = JSON.parse(window.localStorage.getItem('dataset'));
+  const csvArray = store.getStorage();
+
+  csvArray.map((data) => {
+    if (data[`Symbol`] === tickerOne) selectedArr[0] = data;
+    if (data[`Symbol`] === tickerTwo) selectedArr[1] = data;
+    if (selectedArr.length === 2) {
+      cleanUp();
+      compare(selectedArr);
+    }
+  });
+}
+
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+/*---------------------------- OVERVIEW  ---------------------------*/
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------*/
+
 var margin = { top: 20, right: 20, bottom: 30, left: 50 };
-(width = 1200 - margin.left - margin.right),
-  (height = 900 - margin.top - margin.bottom);
+var width = 1200 - margin.left - margin.right;
+var height = 900 - margin.top - margin.bottom;
 
 var sectorTextObjects = [];
 var valueSelected;
@@ -243,6 +315,32 @@ function renderTreeMap(dataSet, metric) {
           return 0;
         }
       });
+
+      // window.localStorage.setItem('dataset', JSON.stringify(data))
+      store.setStorage(data);
+
+      data.map(function (o, i) {
+        const ticker = o[`Symbol`];
+        const name = o[`Name`];
+
+        let dd1 = d3.select(`#a1-2`);
+        let option1 = dd1
+          .append("option")
+          .attr("value", ticker)
+        option1.append('div').text(`${name} - ${ticker}`)
+        
+        let dd2 = d3.select(`#a1-3`);
+        let option2 = dd2
+          .append("option")
+          .attr("value", ticker)
+        option2.append('div').text(`${name} - ${ticker}`)
+
+        let sel1 = document.getElementById('a1-2');
+        sel1.addEventListener("change", compareListener);
+
+        let sel2 = document.getElementById('a1-3');
+        sel2.addEventListener("change", compareListener);
+      })
   });
 }
 

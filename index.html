@@ -5,17 +5,103 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="style.css">
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
 </head>
 
 <body>
     <div id="body"></div>
-    <div id="contents">
+    <div id="contents" class="content">
         <div id="treemap"></div>
     </div>
 
-    <script src="https://d3js.org/d3.v4.min.js"></script>
-    <script src="zoomedIn.js"></script>
-    <script src="app.js"></script>
+
+    <section class="content">
+        <div class="compare ui grid" style="margin-top: 900px">
+                <div class="centered row">
+                    <div class="fifteen wide column">
+                        <div id="card" class="ui grid ui card fluid">
+                            <div class="row" style="height: 65px">
+                                <div id="a1-1" class="middle aligned four wide column">
+                                </div>
+                                <div class="middle aligned center aligned six wide column">
+                                    <select id="a1-2" class="ui search dropdown">
+                                    </select>
+                                </div>
+                                
+                                <div" class="middle aligned center aligned six wide column">
+                                    <select id="a1-3" class="ui search dropdown">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="compare ui grid">
+                <div class="centered row">
+                    <div class="fifteen wide column">
+                        <div id="card1" class="ui grid ui card fluid">
+                            <div class="content">
+                                <div class="center aligned middle aligned column">
+                                    Company Information
+                                </div>
+                            </div>
+                            <div class="row extra content">
+                            </div>
+                            <div class="row" style="height: 65px">
+                                <div id="t1-1" class="middle aligned four wide column">
+                                    Ticker
+                                </div>
+                                <div id="t1-2" class="middle aligned center aligned six wide column">
+                                </div>
+                                <div id="t1-3" class="middle aligned center aligned six wide column">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div id="n1-1" class="middle aligned four wide column">
+                                    Company Name
+                                </div>
+                                <div id="n1-2" class="middle aligned center aligned six wide column"></div>
+                                <div id="n1-3" class="middle aligned center aligned six wide column"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="compare ui grid">
+                <div class="centered row">
+                    <div class="fifteen wide column">
+                        <div id="card2" class="ui grid ui card fluid">
+                            <div class="content">
+                                <div class="center aligned middle aligned column">
+                                    Dividend Information
+                                </div>
+                            </div>
+                            <div class="row extra content">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js"
+integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.min.js"></script> -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+<script src="app.js" type="module"></script>
+<script src="zoomedIn.js"></script>
+
+
+
+
 </body>
 
 </html>

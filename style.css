@@ -2,10 +2,13 @@
 body {
     font-family: Helvetica, Arial, sans-serif;
     color: #3e4144;
-    width: 900px;
-    margin: 25px auto 25px auto;
-    padding: 30px;
-    background-color: white;
+    background-color: whitesmoke !important;
+    align-content: center;
+}
+
+.content {
+    max-width: 1220px;
+    margin: auto;
 }
 
 #treemap {
@@ -60,4 +63,29 @@ p {
     margin-left: 5px;
     font-size: 10px;
     color: white;
+}
+
+.top {
+	margin: 50px;
+}
+
+.ui.grid{
+	background-color: rgba(0,0,0,0.03) !important;
+}
+
+.compare.ui.grid {
+	margin-top: 25px;
+}
+
+.row .metric {
+	margin-top: 20px;
+}
+
+#card1.row.extra.content {
+	margin-top: -50px !important;
+	margin-bottom: -15px !important;
+}
+#card2.row.extra.content {
+	margin-top: -50px !important;
+	margin-bottom: -15px !important;
 }
