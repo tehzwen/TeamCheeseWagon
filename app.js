@@ -48,7 +48,7 @@ function runZoomIn(sectorName, valueName) {
     d3.select('#toolTip').remove();
     var sectorName = sectorName;
 
-    d3.select('div')
+    d3.select('#contents')
         .insert('div')
         .attr('id', 'mydiv')
 
@@ -118,7 +118,7 @@ function runZoomIn(sectorName, valueName) {
 function getData(sector, value) {
 
     d3.select("svg").remove();
-    d3.select("body")
+    d3.select("#contents")
         .append("svg")
         .style("width", overAllWidth)
         .style("height", overAllHeight)
