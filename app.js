@@ -103,11 +103,12 @@ function runZoomIn(sectorName, valueName) {
     myDiv
         .insert("div")
         .attr('id', 'innerButtonDiv')
-        .style('margin-left', '5vh')
         .style('display', 'flex')
 
     var backButton = d3.select("#innerButtonDiv")
         .insert('button')
+        .attr('class', 'ui button large')
+        .style('margin-bottom', '10px')
         .text('Back')
 
     backButton.on("click", function (d) {
@@ -120,6 +121,7 @@ function runZoomIn(sectorName, valueName) {
         .style('color', textColor)
         .style('width', '10vw')
         .style('height', '1.5vw')
+        .style('margin-top', '10px')
 
     valueSelect.selectAll("option")
         .data(valueOptions)
