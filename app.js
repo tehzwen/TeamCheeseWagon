@@ -106,16 +106,16 @@ function runZoomIn(sectorName, valueName) {
             return d;
         });
 
-    getData(sectorName, valueName);
+    getData(d3.select("#dataSelect").property("value"), sectorName, valueName);
 
     valueSelect.on("change", function (d) {
         valueName = d3.select(this).property("value");
-        getData(sectorName, valueName);
+        getData(d3.select("#dataSelect").property("value"), sectorName, valueName);
     });
 
 }
 
-function getData(sector, value) {
+function getData(dataset, sector, value) {
 
     d3.select("svg").remove();
     d3.select("#contents")
@@ -124,7 +124,7 @@ function getData(sector, value) {
         .style("height", overAllHeight)
         .append("g");
 
-    d3.csv("/data/allCCC.csv", function (data) {
+    d3.csv(dataset, function (data) {
 
         let filteredArray = data.filter((value, index, array) => {
             if (value.Sector === sector) {
@@ -147,6 +147,7 @@ function getData(sector, value) {
 
         d3.select("#treemap").remove();
         d3.select("#valueSelect").remove();
+        d3.select("#dataSelect").remove();
         d3.select("#toolTip").remove();
         displayTreeMap(actualData);
 
@@ -321,12 +322,15 @@ var height = 900 - margin.top - margin.bottom;
 
 var sectorTextObjects = [];
 var valueSelected;
+var dataSelected;
 
 function init() {
   valueSelected = "Growth";
+  dataSelected = "/data/champions.csv";
   let body = d3.select("#body");
 
   var valueOptions = ["Growth", "PEG", "P/E", "Price", "Dividend"];
+  var dataOptions = ["Champions", "Contenders"]
 
   let valueSelect = body
     .insert("div")
@@ -352,7 +356,41 @@ function init() {
 
   valueSelect.on("change", function (d) {
     valueSelected = d3.select(this).property("value");
-    renderTreeMap("/data/contenders.csv", d3.select(this).property("value"));
+    renderTreeMap(d3.select("#dataSelect").property("value"), valueSelected);
+  });
+
+  let dataSelect = body
+    .insert("div")
+    .insert("select")
+    .attr("id", "dataSelect")
+    .style("font-family", "Courier New, Courier, monospace")
+    .style("background-color", "white")
+    .style("color", "black")
+    .style("width", "10vw")
+    .style("height", "1.5vw");
+
+  dataSelect
+    .selectAll("option")
+    .data(dataOptions)
+    .enter()
+    .append("option")
+    .attr("value", function (d) {
+      switch (d) {
+        case "Champions":
+          return "/data/champions.csv";
+          break;
+        case "Contenders":
+          return "/data/contenders.csv";
+          break;
+      }
+    })
+    .text(function (d) {
+      return d;
+    });
+
+  dataSelect.on("change", function (d) {
+    dataSelected = d3.select(this).property("value");
+    renderTreeMap(dataSelected, d3.select("#valueSelect").property("value"));
   });
 }
 
@@ -595,7 +633,7 @@ export default function runOverview() {
   d3.select("#innerButtonDiv").remove();
 
   init();
-  renderTreeMap("/data/contenders.csv", "Price");
+  renderTreeMap("/data/champions.csv", "Growth");
 }
 
 runOverview();
