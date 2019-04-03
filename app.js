@@ -510,11 +510,14 @@ function renderTreeMap(dataSet, metric) {
           let ticker = '<strong>' + stock["Symbol"] + '</strong> <br/><br/>';
 
           let industry = 'Industry: ' + stock["Industry"] + '<br/>';
-          let price = 'Price: $' + stock["Price"] + '<br/>';
-          let eps = 'Earnings Per Share: ' + stock["EPS"] + '<br/>';
+          let growth = 'Growth: ' + stock["Growth"] + '<br/>';
           let peg = 'PEG Ratio: ' + stock["PEG"] + '<br/>';
+          let pe = 'P/E Ratio: ' + stock["P/E"] + '<br/>';
+          let price = 'Price: $' + stock["Price"] + '<br/>';
+          let dividend = 'Dividend: $' + stock["Dividend"] + '<br/>';
+          
 
-          return ticker + industry + price + eps + peg;
+          return ticker + industry + growth + peg + pe + price + dividend;
         });
       })
       .on("mouseout", function (d) {
