@@ -17,8 +17,7 @@ function insertRectangle(id, offset, frac, width, reverse) {
 	let svgContainer = thirdDiv
 		.append("svg")
 		.attr("width", width)
-		.attr("height", 18)
-		// .style("float","left")
+		.attr("height", 18);
 
 	svgContainer
 		.append("rect")
@@ -79,27 +78,12 @@ function generateMetricComparison(parentNode, title, id, attr, dataA, dataB, rev
 	insertRectangle(id, offset, frac, MAX_WIDTH, reverse);
 }
 
-function cleanUp() {
-	d3.select("#t1-2").selectAll("*").remove();
-	d3.select("#t1-3").selectAll("*").remove();
-
-	d3.select("#n1-2").selectAll("*").remove();
-	d3.select("#n1-3").selectAll("*").remove();
-
-	d3.select('#card1').selectAll("*").filter((d, i) => i > 10).remove();
-
-	d3.select('#card2').selectAll("*").remove();
-	const card2 = d3.select('#card2');
-	
-	const content = card2.append("div").attr('class', 'content');
-	content.append("div")
-		.attr("class", "center aligned middle aligned column")
-		.text("Dividend Information");
-	card2.append("div").attr('class', 'row extra content');
-}
-
 export default function generateComparision(dataArr) {
-    const [ data1, data2 ] = dataArr;
+	const [ data1, data2 ] = dataArr;
+	
+	if (!(data1 && data2)) {
+		return;
+	}
 
 	// Setup Ticker and Company Names
 	d3.select("#t1-2").append('h1').text(`${data1[`Symbol`]}`);

@@ -1,42 +1,51 @@
-/*------------------------------------------------------------------------*/
-/*------------------------------------------------------------------------*/
-/*------------------------------------------------------------------------*/
 /*---------------------------- IMPORTS  ---------------------------*/
-/*------------------------------------------------------------------------*/
-/*------------------------------------------------------------------------*/
-/*------------------------------------------------------------------------*/
 import compare from './compare.js';
+// import * as d3 from 'd3';
 
+/*--------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
+/*---------------------------- STORAGE  -----------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
 
-/*------------------------------------------------------------------------*/
-/*------------------------------------------------------------------------*/
-/*------------------------------------------------------------------------*/
-/*---------------------------- STORAGE  ---------------------------*/
-/*------------------------------------------------------------------------*/
-/*------------------------------------------------------------------------*/
-/*------------------------------------------------------------------------*/
 class Storage {
   constructor() {
-    this.storage = [];
+    this.dataset = [];
+    this.favorites = [];
   }
 
   setStorage(data) {
-    this.storage = data;
+    this.dataset = data;
   }
 
   getStorage() {
-    return this.storage;
+    return this.dataset;
+  }
+
+  addFavorite(ticker) {
+    this.favorites.push(ticker);
+  }
+
+  removeFavorite(index) {
+    this.favorites.splice(index, 1);
+  }
+
+  getFavorites() {
+    return [...this.favorites];
   }
 }
 var store = new Storage();
 
-/*------------------------------------------------------------------------*/
-/*------------------------------------------------------------------------*/
-/*------------------------------------------------------------------------*/
-/*---------------------------- ZOOM IN  ---------------------------*/
-/*------------------------------------------------------------------------*/
-/*------------------------------------------------------------------------*/
-/*------------------------------------------------------------------------*/
+
+/*--------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
+/*---------------------------- ZOOM IN  ---------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
 var valueName = "Growth"
 var overAllHeight = 900;
 var overAllWidth = 1200;
@@ -243,11 +252,21 @@ function displayTreeMap(actualData) {
                 return "";
             }
 
+            // console.log({data: d.data})
             return d.data.value;
         })
-
         .attr('dx', 4)
         .attr('dy', 35)
+
+      nodes.on("click", function(d){
+        if (store.getFavorites().indexOf(d.data.name) !== -1){
+          return;
+        }
+        store.addFavorite(d.data.name);
+        renderFavorities()
+        renderDropdowns(store.getStorage());
+        alert(`Stock: ${d.data.name} was added to favorites`)
+      });
 
 
     d3.selectAll('rect')
@@ -259,13 +278,15 @@ function displayTreeMap(actualData) {
         .attr('stroke', 'white')
 }
 
-/*------------------------------------------------------------------------*/
-/*------------------------------------------------------------------------*/
-/*------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
+
 /*---------------------------- COMPARISION  ---------------------------*/
-/*------------------------------------------------------------------------*/
-/*------------------------------------------------------------------------*/
-/*------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
+
 function cleanUp() {
 	d3.select("#t1-2").selectAll("*").remove();
 	d3.select("#t1-3").selectAll("*").remove();
@@ -294,12 +315,13 @@ function compareListener() {
 	const tickerOne = sel1.options[sel1.selectedIndex].value;
 	const tickerTwo = sel2.options[sel2.selectedIndex].value;
 
-  // const csvArray = JSON.parse(window.localStorage.getItem('dataset'));
   const csvArray = store.getStorage();
 
   csvArray.map((data) => {
+    if (!data) return;
     if (data[`Symbol`] === tickerOne) selectedArr[0] = data;
     if (data[`Symbol`] === tickerTwo) selectedArr[1] = data;
+
     if (selectedArr.length === 2) {
       cleanUp();
       compare(selectedArr);
@@ -307,13 +329,15 @@ function compareListener() {
   });
 }
 
-/*------------------------------------------------------------------------*/
-/*------------------------------------------------------------------------*/
-/*------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
+
 /*---------------------------- OVERVIEW  ---------------------------*/
-/*------------------------------------------------------------------------*/
-/*------------------------------------------------------------------------*/
-/*------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------*/
+
 
 var margin = { top: 20, right: 20, bottom: 30, left: 50 };
 var width = 1200 - margin.left - margin.right;
@@ -561,32 +585,111 @@ function renderTreeMap(dataSet, metric) {
         }
       });
 
-      // window.localStorage.setItem('dataset', JSON.stringify(data))
       store.setStorage(data);
 
-      data.map(function (o, i) {
-        const ticker = o[`Symbol`];
-        const name = o[`Name`];
-
-        let dd1 = d3.select(`#a1-2`);
-        let option1 = dd1
-          .append("option")
-          .attr("value", ticker)
-        option1.append('div').text(`${name} - ${ticker}`)
-        
-        let dd2 = d3.select(`#a1-3`);
-        let option2 = dd2
-          .append("option")
-          .attr("value", ticker)
-        option2.append('div').text(`${name} - ${ticker}`)
-
-        let sel1 = document.getElementById('a1-2');
-        sel1.addEventListener("change", compareListener);
-
-        let sel2 = document.getElementById('a1-3');
-        sel2.addEventListener("change", compareListener);
-      })
+      renderDropdowns(data);
   });
+}
+
+function renderDropdowns(data) {
+
+  d3.select(`#a1-2`).selectAll("*").remove();
+  d3.select(`#a1-3`).selectAll("*").remove();
+
+  const select1= d3.select(`#a1-2`);
+
+  select1
+    .append("option")
+    .attr("disabled", true)
+    .text('');
+  select1
+    .append("option")
+    .attr("disabled", true)
+    .text('Browse');
+
+  const select2 = d3.select(`#a1-3`);
+  select2
+    .append("option")
+    .attr("disabled", true)
+    .text('');
+  
+  select2
+    .append("option")
+    .attr("disabled", true)
+    .text('Browse');
+
+  data.map(function (o, i) {
+    const ticker = o[`Symbol`];
+    const name = o[`Name`];
+
+    let dd1 = d3.select(`#a1-2`);
+    let option1 = dd1
+      .append("option")
+      .attr("value", ticker)
+    option1.append('div').text(`${name} - ${ticker}`)
+    
+    let dd2 = d3.select(`#a1-3`);
+    let option2 = dd2
+      .append("option")
+      .attr("value", ticker)
+    option2.append('div').text(`${name} - ${ticker}`)
+
+    let sel1 = document.getElementById('a1-2');
+    sel1.addEventListener("change", compareListener);
+
+    let sel2 = document.getElementById('a1-3');
+    sel2.addEventListener("change", compareListener);
+  });
+
+  const firstDropdown = d3.select(`#a1-2`)
+  const secondDropdown = d3.select(`#a1-3`)
+
+  const favorites = store.getFavorites();
+  favorites.map((d) => {
+
+    const op1 = firstDropdown.insert("option", "option")
+      .attr("value", d)
+    op1.append('div').text(`${d} - ${d}`)
+
+    const op2 = secondDropdown.insert("option", "option")
+      .attr("value", d)
+    op2.append('div').text(`${d} - ${d}`)
+  })
+
+  d3.select(`#a1-2`).insert("option", "option")
+    .attr("disabled", true)
+    .append('div').text(`Favorites`)
+  
+  d3.select(`#a1-3`).insert("option", "option")
+    .attr("disabled", true)
+    .append('div').text(`Favorites`)
+}
+
+function renderFavorities() {
+  let favs = d3.select(`#favs`);
+  favs.selectAll("*").remove();
+
+  store.getFavorites().map((fTicker) => {
+    const favorite = favs.append("div")
+      .attr("class", "favorites")
+
+    const fspan = favorite
+      .append('span');
+    
+    fspan.append('span')
+      .style("padding-right", "6px")
+      .text(fTicker);
+    fspan
+      .append('i')
+      .attr("class", "fas fa-times")
+      .style("cursor", "pointer")
+      .style("font-size", "22px")
+      .on("click", () => {
+        store.removeFavorite(store.getFavorites().indexOf(fTicker));
+        renderFavorities();
+        renderDropdowns(store.getStorage());
+      });
+    })
 }
 
 export default function runOverview() {
