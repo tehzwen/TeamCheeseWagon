@@ -7,7 +7,7 @@ import compare from './compare.js';
 /*--------------------------------------------------------------------------------------------------*/
 /*---------------------------- STORAGE  -----------------------------------------------------*/
 /*--------------------------------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------------------------------*/
+/*-------------------- Treat this as a Singleton -------------------------------------------------*/
 /*--------------------------------------------------------------------------------------------------*/
 
 class Storage {
@@ -353,37 +353,17 @@ function init() {
   dataSelected = "/data/champions.csv";
   let body = d3.select("#body");
 
+  body.selectAll("*").remove();
+
   var valueOptions = ["Growth", "PEG", "P/E", "Price", "Dividend"];
   var dataOptions = ["Champions", "Contenders"]
 
-  let valueSelect = body
+    const secondCombo = body.insert("div").attr("class", "combo");
+  secondCombo
     .insert("div")
-    .insert("select")
-    .attr("id", "valueSelect")
-    .style("font-family", "Courier New, Courier, monospace")
-    .style("background-color", "white")
-    .style("color", "black")
-    .style("width", "10vw")
-    .style("height", "1.5vw");
+    .text("Select a Dataset")
 
-  valueSelect
-    .selectAll("option")
-    .data(valueOptions)
-    .enter()
-    .append("option")
-    .attr("value", function (d) {
-      return d;
-    })
-    .text(function (d) {
-      return d;
-    });
-
-  valueSelect.on("change", function (d) {
-    valueSelected = d3.select(this).property("value");
-    renderTreeMap(d3.select("#dataSelect").property("value"), valueSelected);
-  });
-
-  let dataSelect = body
+  let dataSelect = secondCombo
     .insert("div")
     .insert("select")
     .attr("id", "dataSelect")
@@ -416,6 +396,40 @@ function init() {
     dataSelected = d3.select(this).property("value");
     renderTreeMap(dataSelected, d3.select("#valueSelect").property("value"));
   });
+
+  const firstCombo = body.insert("div").attr("class", "combo");
+  firstCombo
+    .insert("div")
+    .text("Select a Metric")
+
+  let valueSelect = firstCombo
+    .insert("div")
+    .insert("select")
+    .attr("id", "valueSelect")
+    .style("font-family", "Courier New, Courier, monospace")
+    .style("background-color", "white")
+    .style("color", "black")
+    .style("width", "10vw")
+    .style("height", "1.5vw");
+
+  valueSelect
+    .selectAll("option")
+    .data(valueOptions)
+    .enter()
+    .append("option")
+    .attr("value", function (d) {
+      return d;
+    })
+    .text(function (d) {
+      return d;
+    });
+
+  valueSelect.on("change", function (d) {
+    valueSelected = d3.select(this).property("value");
+    renderTreeMap(d3.select("#dataSelect").property("value"), valueSelected);
+  });
+
+
 }
 
 function getColorDomain(metric) {

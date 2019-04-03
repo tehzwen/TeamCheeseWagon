@@ -21,7 +21,7 @@ body {
     vertical-align: middle;
     margin: 5px;
     padding: 5px;
-    background-color: whitesmoke;
+    background-color: whitesmoke !important;
     border: 1px solid black;
     border-radius: 5px;
     -webkit-box-shadow: -1px 3px 10px -2px rgba(0,0,0,0.32);
@@ -106,4 +106,35 @@ p {
 #card2.row.extra.content {
 	margin-top: -50px !important;
 	margin-bottom: -15px !important;
+}
+
+select {
+    border-radius: 6px;
+}
+
+.jump-to-compare {
+    background-color : #31B0D5;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    border-color: #46b8da;
+}
+  
+#mybutton {
+    position: fixed;
+    bottom: 40px;
+    right: 30px;
+    z-index: 9999;
+}
+
+#valueSelect, #dataSelect {
+    margin: 5px;
+}
+
+.combo {
+    margin: 5px;
+}
+
+#body {
+    margin-left: 10px;
 }

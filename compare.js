@@ -34,7 +34,7 @@ function insertCompanyData(id, frac, offset, columnNumber, data, attr, reverse, 
 		.append("div").attr('class', 'row');
 
 	base.append("div").attr('class', 'middle aligned two wide column')
-		.text(`${unit || ''}${data[`${attr}`]}`)
+		.text(`${unit || ''}${data[`${attr}`]}`).style("font-weight", "bold")
 
 	let secondColumn = base.append("div").attr('class', 'middle aligned right aligned five wide column')
 

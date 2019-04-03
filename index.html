@@ -7,42 +7,68 @@
     <link rel="stylesheet" href="style.css">
     <script src="http://code.jquery.com/jquery-3.3.1.min.js"
     integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
 </head>
 
 <body>
-    <div id="body"></div>
+    <div id="mybutton">
+        <button class="jump-to-compare ui circular facebook icon button huge" onClick="document.getElementById('card1').scrollIntoView();">
+            <i class="exchange icon"></i>
+            Compare
+        </button>
+    </div>
+
+    <div class="ui grid ui card fluid">
+        <div id="body" class="row">
+        </div>
+    </div>
     <div id="contents" class="content-top">
         <div id="treemap"></div>
     </div>
 
     <section class="compare-content">
         <div class="compare ui grid">
-                <div class="centered row">
-                        Favorites
-                </div>
-                <div id="favs" class="centered row">
-                </div>
-                <div class="centered row">
-                    <div class="fifteen wide column">
-                        <div id="card" class="ui grid ui card fluid">
-                            <div class="row" style="height: 65px">
-                                <div id="a1-1" class="middle aligned four wide column">
-                                </div>
-                                <div class="middle aligned center aligned six wide column">
-                                    <select id="a1-2" class="ui search dropdown">
-                                    </select>
-                                </div>
-                                
-                                <div" class="middle aligned center aligned six wide column">
-                                    <select id="a1-3" class="ui search dropdown">
-                                    </select>
-                                </div>
-                            </div>
+            <div class="centered row">
+                <div class="fifteen wide column">
+                    <div class="ui grid ui card fluid">
+                        <div class="centered row">
+                                Favorites
+                        </div>
+                        <div id="favs" class="centered row">
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="centered row">
+                <div class="fifteen wide column">
+                    <div id="card" class="ui grid ui card fluid">
+                        <div class="centered row">
+                                Select Stocks To Compare
+                        </div>
+                        <div class="row centered" style="height: 100px">
+                            <div class="middle aligned center aligned six wide column">
+                                <select id="a1-2" class="ui search dropdown" >
+                                    <option value="" disabled selected>Select your option</option>
+                                </select>
+                            </div>
+                            
+                            <div class="middle aligned center aligned six wide column">
+                                <select id="a1-3" class="ui search dropdown">
+                                    <option value="" disabled selected>Select your option</option>
+                                </select>
+                            </div>
+                            <div class="ui vertical divider">
+                                VS
+                            </div>
+                        </div>
+
+                        <div class="centered row">
+                            *Note:<strong> &nbsp; <span style="color: #DC143C">RED</span>&nbsp; </strong>lines show how much worse an attribute is (when higher number is the losing value)
+                        </div>
+                 
+                    </div>
+                </div>
+            </div>
+        </div>
         
             <div class="compare ui grid">
                 <div class="centered row">
@@ -50,7 +76,7 @@
                         <div id="card1" class="ui grid ui card fluid">
                             <div class="content">
                                 <div class="center aligned middle aligned column">
-                                    Company Information
+                                    General Information
                                 </div>
                             </div>
                             <div class="row extra content">
@@ -101,6 +127,7 @@
     <!-- <script src="zoomedIn.js" type="module"></script> -->
     <script src="app.js" type="module"></script>
     <!-- <script src="scripts.js" type="module"></script> -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
 
 </body>
 
