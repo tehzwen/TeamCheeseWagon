@@ -115,16 +115,16 @@ function runZoomIn(sectorName, valueName) {
             return d;
         });
 
-    getData(sectorName, valueName);
+    getData(d3.select("#dataSelect").property("value"), sectorName, valueName);
 
     valueSelect.on("change", function (d) {
         valueName = d3.select(this).property("value");
-        getData(sectorName, valueName);
+        getData(d3.select("#dataSelect").property("value"), sectorName, valueName);
     });
 
 }
 
-function getData(sector, value) {
+function getData(dataset, sector, value) {
 
     d3.select("svg").remove();
     d3.select("#contents")
@@ -133,7 +133,7 @@ function getData(sector, value) {
         .style("height", overAllHeight)
         .append("g");
 
-    d3.csv("/data/allCCC.csv", function (data) {
+    d3.csv(dataset, function (data) {
 
         let filteredArray = data.filter((value, index, array) => {
             if (value.Sector === sector) {
@@ -156,6 +156,7 @@ function getData(sector, value) {
 
         d3.select("#treemap").remove();
         d3.select("#valueSelect").remove();
+        d3.select("#dataSelect").remove();
         d3.select("#toolTip").remove();
         displayTreeMap(actualData);
 
@@ -345,12 +346,15 @@ var height = 900 - margin.top - margin.bottom;
 
 var sectorTextObjects = [];
 var valueSelected;
+var dataSelected;
 
 function init() {
   valueSelected = "Growth";
+  dataSelected = "/data/champions.csv";
   let body = d3.select("#body");
 
   var valueOptions = ["Growth", "PEG", "P/E", "Price", "Dividend"];
+  var dataOptions = ["Champions", "Contenders"]
 
   let valueSelect = body
     .insert("div")
@@ -376,8 +380,91 @@ function init() {
 
   valueSelect.on("change", function (d) {
     valueSelected = d3.select(this).property("value");
-    renderTreeMap("/data/contenders.csv", d3.select(this).property("value"));
+    renderTreeMap(d3.select("#dataSelect").property("value"), valueSelected);
   });
+
+  let dataSelect = body
+    .insert("div")
+    .insert("select")
+    .attr("id", "dataSelect")
+    .style("font-family", "Courier New, Courier, monospace")
+    .style("background-color", "white")
+    .style("color", "black")
+    .style("width", "10vw")
+    .style("height", "1.5vw");
+
+  dataSelect
+    .selectAll("option")
+    .data(dataOptions)
+    .enter()
+    .append("option")
+    .attr("value", function (d) {
+      switch (d) {
+        case "Champions":
+          return "/data/champions.csv";
+          break;
+        case "Contenders":
+          return "/data/contenders.csv";
+          break;
+      }
+    })
+    .text(function (d) {
+      return d;
+    });
+
+  dataSelect.on("change", function (d) {
+    dataSelected = d3.select(this).property("value");
+    renderTreeMap(dataSelected, d3.select("#valueSelect").property("value"));
+  });
+}
+
+function getColorDomain(metric) {
+  switch(metric) {
+    case "Growth":
+      return [-5, -1, 1, 5];
+      break;
+    case "PEG":
+      return [-3, -1, 1, 3];
+      break;
+    case "P/E":
+      return [15, 1, -1, -15];
+      break;
+    case "Price":
+      return [50, 10, -10, -50];
+      break;
+    case "Dividend":
+      return [-2, -1, 1, 2];
+      break;    
+  }
+}
+
+function getColorRange(metric) {
+  let range = ["#644553", "#8B444E", "#414554", "#347D4E", "#38694F"]
+
+  switch(metric) {
+    case "Growth":
+    case "PEG":
+    case "Dividend":
+      return range;
+      break;
+    case "Price":
+    case "P/E":
+      return range.reverse();  
+  }
+}
+
+function getSort(metric, a, b) {
+  switch(metric) {
+    case "Growth":
+    case "PEG":
+    case "Dividend":
+      return b.value - a.value;
+      break;
+    case "Price":
+    case "P/E":
+      return a.value - b.value; 
+      break;
+  }
 }
 
 function renderTreeMap(dataSet, metric) {
@@ -439,8 +526,8 @@ function renderTreeMap(dataSet, metric) {
 
     let color = d3
       .scaleThreshold()
-      .domain([-10, -1, 1, 10])
-      .range(["#644553", "#8B444E", "#414554", "#347D4E", "#38694F"]);
+      .domain(getColorDomain(d3.select("#valueSelect").property("value")))
+      .range(getColorRange(d3.select("#valueSelect").property("value")))
 
     let root = d3
       .hierarchy({ values: nest.entries(data).slice(0, -1) }, function (d) {
@@ -450,7 +537,7 @@ function renderTreeMap(dataSet, metric) {
         return d.value;
       })
       .sort(function (a, b) {
-        return b.value - a.value;
+        return getSort(d3.select("#valueSelect").property("value"), a, b);
       });
 
     treemap(root);
@@ -496,11 +583,14 @@ function renderTreeMap(dataSet, metric) {
           let ticker = '<strong>' + stock["Symbol"] + '</strong> <br/><br/>';
 
           let industry = 'Industry: ' + stock["Industry"] + '<br/>';
-          let price = 'Price: $' + stock["Price"] + '<br/>';
-          let eps = 'Earnings Per Share: ' + stock["EPS"] + '<br/>';
+          let growth = 'Growth: ' + stock["Growth"] + '<br/>';
           let peg = 'PEG Ratio: ' + stock["PEG"] + '<br/>';
+          let pe = 'P/E Ratio: ' + stock["P/E"] + '<br/>';
+          let price = 'Price: $' + stock["Price"] + '<br/>';
+          let dividend = 'Dividend: $' + stock["Dividend"] + '<br/>';
+          
 
-          return ticker + industry + price + eps + peg;
+          return ticker + industry + growth + peg + pe + price + dividend;
         });
       })
       .on("mouseout", function (d) {
@@ -698,8 +788,7 @@ export default function runOverview() {
   d3.select("#innerButtonDiv").remove();
 
   init();
-  renderTreeMap("/data/contenders.csv", "Price");
+  renderTreeMap("/data/champions.csv", "Growth");
 }
 
 runOverview();
-
