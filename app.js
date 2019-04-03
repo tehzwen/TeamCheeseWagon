@@ -394,6 +394,55 @@ function init() {
   });
 }
 
+function getColorDomain(metric) {
+  switch(metric) {
+    case "Growth":
+      return [-5, -1, 1, 5];
+      break;
+    case "PEG":
+      return [-3, -1, 1, 3];
+      break;
+    case "P/E":
+      return [15, 1, -1, -15];
+      break;
+    case "Price":
+      return [50, 10, -10, -50];
+      break;
+    case "Dividend":
+      return [-2, -1, 1, 2];
+      break;    
+  }
+}
+
+function getColorRange(metric) {
+  let range = ["#644553", "#8B444E", "#414554", "#347D4E", "#38694F"]
+
+  switch(metric) {
+    case "Growth":
+    case "PEG":
+    case "Dividend":
+      return range;
+      break;
+    case "Price":
+    case "P/E":
+      return range.reverse();  
+  }
+}
+
+function getSort(metric, a, b) {
+  switch(metric) {
+    case "Growth":
+    case "PEG":
+    case "Dividend":
+      return b.value - a.value;
+      break;
+    case "Price":
+    case "P/E":
+      return a.value - b.value; 
+      break;
+  }
+}
+
 function renderTreeMap(dataSet, metric) {
   //Removing treemap div and readding it for rerendering of treemap
   d3.select("#treemap").remove();
@@ -453,8 +502,8 @@ function renderTreeMap(dataSet, metric) {
 
     let color = d3
       .scaleThreshold()
-      .domain([-10, -1, 1, 10])
-      .range(["#644553", "#8B444E", "#414554", "#347D4E", "#38694F"]);
+      .domain(getColorDomain(d3.select("#valueSelect").property("value")))
+      .range(getColorRange(d3.select("#valueSelect").property("value")))
 
     let root = d3
       .hierarchy({ values: nest.entries(data).slice(0, -1) }, function (d) {
@@ -464,7 +513,7 @@ function renderTreeMap(dataSet, metric) {
         return d.value;
       })
       .sort(function (a, b) {
-        return b.value - a.value;
+        return getSort(d3.select("#valueSelect").property("value"), a, b);
       });
 
     treemap(root);
@@ -640,4 +689,3 @@ export default function runOverview() {
 }
 
 runOverview();
-
