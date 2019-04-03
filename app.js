@@ -14,6 +14,10 @@ class Storage {
   constructor() {
     this.dataset = [];
     this.favorites = [];
+    this.overview = {
+      metric: '',
+      datasetName: ''
+    }
   }
 
   setStorage(data) {
@@ -34,6 +38,19 @@ class Storage {
 
   getFavorites() {
     return [...this.favorites];
+  }
+
+  setOverviewOptions(datasetName, metric) {
+    if (metric) {
+      this.overview = { ...this.overview, metric }
+    }
+    if (datasetName) {
+      this.overview = { ...this.overview, datasetName }
+    }
+  }
+
+  getOverviewOptions() {
+    return { ...this.overview };
   }
 }
 var store = new Storage();
@@ -115,12 +132,14 @@ function runZoomIn(sectorName, valueName) {
             return d;
         });
 
-    getData(d3.select("#dataSelect").property("value"), sectorName, valueName);
+    getData(store.getOverviewOptions().datasetName, sectorName, valueName);
 
     valueSelect.on("change", function (d) {
         valueName = d3.select(this).property("value");
-        getData(d3.select("#dataSelect").property("value"), sectorName, valueName);
+        getData(store.getOverviewOptions().datasetName, sectorName, valueName);
     });
+
+
 
 }
 
@@ -146,7 +165,6 @@ function getData(dataset, sector, value) {
         for (let i = 0; i < filteredArray.length; i++) {
 
             if (filteredArray[i][value] > 0 && filteredArray[i][value] !== "n/a") {
-                //console.log(filteredArray[i][value]);
                 actualData.children.push({
                     "name": filteredArray[i]["Symbol"],
                     "value": filteredArray[i][value]
@@ -155,8 +173,7 @@ function getData(dataset, sector, value) {
         }
 
         d3.select("#treemap").remove();
-        d3.select("#valueSelect").remove();
-        d3.select("#dataSelect").remove();
+        d3.select("#body").selectAll("*").remove();
         d3.select("#toolTip").remove();
         displayTreeMap(actualData);
 
@@ -382,20 +399,14 @@ function init() {
       switch (d) {
         case "Champions":
           return "/data/champions.csv";
-          break;
         case "Contenders":
           return "/data/contenders.csv";
-          break;
       }
     })
     .text(function (d) {
       return d;
     });
 
-  dataSelect.on("change", function (d) {
-    dataSelected = d3.select(this).property("value");
-    renderTreeMap(dataSelected, d3.select("#valueSelect").property("value"));
-  });
 
   const firstCombo = body.insert("div").attr("class", "combo");
   firstCombo
@@ -426,9 +437,15 @@ function init() {
 
   valueSelect.on("change", function (d) {
     valueSelected = d3.select(this).property("value");
+    store.setOverviewOptions(undefined, valueSelected);
     renderTreeMap(d3.select("#dataSelect").property("value"), valueSelected);
   });
 
+  dataSelect.on("change", function (d) {
+    dataSelected = d3.select(this).property("value");
+    store.setOverviewOptions(d3.select("#dataSelect").property("value"));
+    renderTreeMap(dataSelected, d3.select("#valueSelect").property("value"));
+  });
 
 }
 
@@ -802,7 +819,10 @@ export default function runOverview() {
   d3.select("#innerButtonDiv").remove();
 
   init();
-  renderTreeMap("/data/champions.csv", "Growth");
+  const defaultDataset = "/data/champions.csv";
+  const defaultMetric = "Growth";
+  renderTreeMap(defaultDataset, defaultMetric);
+  store.setOverviewOptions(defaultDataset, defaultMetric)
 }
 
 runOverview();
